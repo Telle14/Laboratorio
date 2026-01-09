@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lab Master V9 - Interactive Station</title>
+    <title>Lab Master V10 - Evolution</title>
     <style>
         :root {
             --bg: #010409; --card: #0d1117; --border: #30363d;
@@ -19,40 +19,35 @@
         .search-box { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0; }
         #search { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: white; font-size: 13px; }
 
-        .shelf { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 250px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .item { background: #161b22; border: 1px solid var(--border); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
-        .item.active { border-color: var(--accent); background: #1f2937; transform: scale(0.98); }
+        .shelf { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 350px; overflow-y: auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .item { background: #161b22; border: 1px solid var(--border); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; position: relative;}
+        .item.active { border-color: var(--accent); background: #1f2937; box-shadow: 0 0 10px rgba(88,166,255,0.2); }
         .item.hide { display: none; }
+        .item.new-item { border-color: var(--safe); background: #0e2a14; }
 
-        .q-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--info); color: var(--info); background: none; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; cursor: pointer; }
+        .q-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--info); color: var(--info); background: none; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; }
 
         .reactor { background: var(--card); border: 2px dashed var(--border); border-radius: 12px; padding: 15px; text-align: center; }
-        .mix-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--safe); color: white; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 4px 0 #238636; }
-        .mix-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #238636; }
-        .mix-btn:disabled { background: #21262d; color: #484f58; box-shadow: none; }
+        .mix-btn { width: 100%; padding: 14px; border-radius: 8px; border: none; background: var(--safe); color: white; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .mix-btn:disabled { background: #21262d; color: #484f58; }
 
-        .result-pane { display: none; background: #161b22; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; border-left: 4px solid var(--accent); }
-
-        .history { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
-        .recipe-card { background: #010409; border-radius: 6px; padding: 10px; margin-bottom: 8px; border-left: 3px solid var(--safe); display: flex; justify-content: space-between; align-items: center; }
-        
-        .btn-action { border: none; border-radius: 4px; padding: 5px 8px; font-size: 9px; cursor: pointer; font-weight: bold; }
-        .btn-load { background: var(--accent); color: white; margin-right: 5px; }
-        .btn-save-recipe { background: var(--safe); color: white; margin-top: 10px; width: 100%; padding: 8px; }
+        .result-pane { display: none; background: #161b22; border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-top: 8px; border-left: 5px solid var(--accent); position: relative; }
 
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; width: 100%; max-height: 80%; overflow-y: auto; text-align: center; }
-        .close-btn { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin-top: 15px; font-weight: bold; }
+        .modal-content { background: var(--card); border: 1px solid var(--accent); border-radius: 15px; padding: 20px; width: 100%; max-height: 85%; overflow-y: auto; }
+        .close-btn { background: var(--danger); color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; margin-top: 15px; font-weight: bold; }
+        
+        .danger-badge { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>CHEM-LAB Master V9</h1>
+    <h1>🔬 LAB MASTER V10 EVOLUTION</h1>
 
     <div class="search-box">
-        <input type="text" id="search" placeholder="Escribe para buscar..." onkeyup="filter()">
+        <input type="text" id="search" placeholder="Buscar elemento o receta..." onkeyup="filter()">
     </div>
 
     <div class="shelf">
@@ -60,17 +55,12 @@
     </div>
 
     <div class="reactor">
-        <div id="selection-text" style="margin-bottom: 8px; color: #8b949e;">Mesa vacía...</div>
-        <button class="mix-btn" id="mix-trigger" disabled onclick="simulate()">MEZCLAR AHORA</button>
-        <button onclick="clearLab()" style="background:none; border:none; color:var(--danger); font-size:9px; margin-top:10px;">RESETEAR MESA</button>
+        <div id="selection-text" style="margin-bottom: 8px; color: #8b949e; font-size: 10px;">Reactivos listos: Ninguno</div>
+        <button class="mix-btn" id="mix-trigger" disabled onclick="simulate()">MEZCLAR REACTIVOS</button>
+        <button onclick="clearLab()" style="background:none; border:none; color:var(--danger); font-size:9px; margin-top:10px; cursor:pointer;">LIMPIAR MESA</button>
     </div>
 
     <div id="result-display" class="result-pane"></div>
-
-    <div class="history">
-        <span style="font-weight:bold; color:var(--info); font-size:10px;">📔 RECETARIO GUARDADO</span>
-        <div id="saved-list" style="margin-top:8px;"></div>
-    </div>
 </div>
 
 <div id="modal" class="modal">
@@ -78,50 +68,63 @@
 </div>
 
 <script>
+    // BASE DE DATOS MASIVA RECUPERADA
     const QUIMICOS = {
-        "Acido Fluorhidrico": { d: "Líquido ultra-corrosivo.", u: "Grabado de cristales." },
-        "Hierro": { d: "Metal sólido.", u: "Construcción." },
-        "Agua": { d: "Solvente vital.", u: "Refrigerante." },
-        "Fuego": { d: "Energía térmica.", u: "Iniciador." },
-        "Sodio Metalico": { d: "Metal reactivo.", u: "Síntesis." },
-        "Litio": { d: "Metal ligero.", u: "Baterías." },
-        "Salitre": { d: "Oxidante potente.", u: "Pólvora." },
-        "Azufre": { d: "No metal inflamable.", u: "Vulcanización." },
-        "Carbon": { d: "Base orgánica.", u: "Combustible." },
-        "Polvora": { d: "Mezcla explosiva.", u: "Pirotecnia." },
-        "Lavandina": { d: "Cloro líquido.", u: "Limpieza." },
-        "Amoniaco": { d: "Gas fuerte.", u: "Fertilizante." },
-        "Glicerina": { d: "Viscoso dulce.", u: "Explosivos." },
-        "Permanganato de Potasio": { d: "Oxidante púrpura.", u: "Filtros." },
-        "Acido Sulfurico": { d: "Ácido mineral.", u: "Baterías." },
-        "Sosa Caustica": { d: "Base fuerte.", u: "Destape." },
-        "Aluminio": { d: "Metal ligero.", u: "Envases." }
+        "Acido Fluorhidrico": { d: "Líquido incoloro ultra-corrosivo.", piel: "Destruye el calcio de los huesos por dentro.", aire: "Asfixia inmediata, daño pulmonar grave.", ingest: "Mortal.", prev: "Uso de guantes de nitrilo grueso y máscara.", uso: "Grabar vidrio y chips." },
+        "Hierro": { d: "Metal de transición sólido.", piel: "Seguro.", aire: "Nulo.", ingest: "Grave en grandes cantidades.", prev: "N/A", uso: "Estructuras y herramientas." },
+        "Agua": { d: "Solvente universal (H2O).", piel: "Seguro.", aire: "Seguro.", ingest: "Vital.", prev: "N/A", uso: "Vida y enfriamiento." },
+        "Fuego": { d: "Plasma y energía térmica.", piel: "Quemaduras de 1er a 3er grado.", aire: "Monóxido de carbono (tóxico).", ingest: "Mortal.", prev: "Manejar en campana.", uso: "Catalizador de calor." },
+        "Sodio Metalico": { d: "Metal blando plateado ultra reactivo.", piel: "Corrosivo, quema al contacto con humedad.", aire: "Irritante.", ingest: "Explosivo en el estómago.", prev: "Guardar en aceite mineral.", uso: "Laboratorio avanzado." },
+        "Litio": { d: "Metal ligero y reactivo.", piel: "Irrita y quema con humedad.", aire: "Daña vías respiratorias.", ingest: "Tóxico/Grave.", prev: "Evitar contacto con agua.", uso: "Baterías." },
+        "Salitre": { d: "Nitrato de potasio (Oxidante).", piel: "Reseca la piel.", aire: "Nulo.", ingest: "Grave.", prev: "Mantener seco.", uso: "Conservante y pólvora." },
+        "Azufre": { d: "No metal amarillento inflamable.", piel: "Leve irritación.", aire: "Dióxido de azufre al quemarse (asfixia).", ingest: "Tóxico.", prev: "Lejos de fuego.", uso: "Vulcanización." },
+        "Carbon": { d: "Elemento base de la vida.", piel: "Suciedad.", aire: "Polvo daña pulmones.", ingest: "Antídoto (carbón activado).", prev: "N/A", uso: "Combustible." },
+        "Lavandina": { d: "Hipoclorito de sodio.", piel: "Corrosivo e irritante.", aire: "Irrita ojos y nariz.", ingest: "Quemadura interna.", prev: "No mezclar con ácidos.", uso: "Desinfección." },
+        "Amoniaco": { d: "Gas/líquido de olor penetrante.", piel: "Quema los tejidos.", aire: "Letal en altas concentraciones.", ingest: "Corrosivo.", prev: "Usar en lugar ventilado.", uso: "Limpieza y agro." },
+        "Glicerina": { d: "Líquido viscoso incoloro.", piel: "Seguro (hidratante).", aire: "Nulo.", ingest: "Seguro.", prev: "N/A", uso: "Jabones y cosméticos." },
+        "Permanganato de Potasio": { d: "Sal cristalina púrpura.", piel: "Mancha la piel permanentemente.", aire: "Irrita.", ingest: "Venenoso.", prev: "Usar guantes.", uso: "Desinfección de aguas." }
     };
 
     const REACCIONES = [
-        { items: ["Salitre", "Azufre", "Carbon"], nombre: "Polvora Negra", peligro: "ALTO", util: true, desc: "Mezcla propelente clásica.", uso: "Demolición y cohetes." },
-        { items: ["Polvora", "Fuego"], nombre: "Gran Explosion", peligro: "MORTAL", util: true, desc: "¡KABOOM! Expansión térmica masiva.", uso: "Minería pesada." },
-        { items: ["Litio", "Agua"], nombre: "Estallido de Hidrogeno", peligro: "EXTREMO", util: true, desc: "Reacción efervescente que termina en estallido.", uso: "Celdas de combustible." },
-        { items: ["Agua", "Sodio Metalico"], nombre: "Bola de Fuego", peligro: "MORTAL", util: true, desc: "Explosión blanca instantánea.", uso: "Reactividad pura." },
-        { items: ["Lavandina", "Amoniaco"], nombre: "Gas Cloramina", peligro: "MORTAL", util: true, desc: "Gas asfixiante letal.", uso: "Uso industrial restringido." },
-        { items: ["Glicerina", "Permanganato de Potasio"], nombre: "Fuego Purpura", peligro: "MEDIO", util: true, desc: "Fuego químico espontáneo.", uso: "Señalización." },
-        { items: ["Acido Fluorhidrico", "Hierro"], nombre: "Desecho Corrosivo", peligro: "ALTO", util: false, desc: "Masa negra sin utilidad.", uso: "Ninguno." }
+        { items: ["Salitre", "Azufre", "Carbon"], nombre: "Polvora Negra", peligro: "ALTO", color: "var(--warning)", desc: "Se ha sintetizado Pólvora. Un compuesto sólido capaz de deflagrar.", extra: "Al mezclar estos tres ingredientes, el salitre aporta el oxígeno para que el carbón y el azufre ardan instantáneamente.", util: true },
+        { items: ["Polvora Negra", "Fuego"], nombre: "Explosion Pirotecnica", peligro: "MORTAL", color: "var(--danger)", desc: "¡KABOOM! La pólvora se expande en una bola de fuego.", extra: "La energía química se libera en milisegundos creando una onda de presión.", util: false },
+        { items: ["Litio", "Agua"], nombre: "Estallido de Hidrogeno", peligro: "EXTREMO", color: "var(--danger)", desc: "El litio reacciona creando gas hidrógeno que se inflama.", extra: "Es una reacción exotérmica violenta típica de los metales alcalinos.", util: false },
+        { items: ["Lavandina", "Amoniaco"], nombre: "Gas Cloramina", peligro: "MORTAL", color: "var(--danger)", desc: "Humo blanco invisible y letal.", extra: "Ataca las membranas mucosas y causa edema pulmonar inmediato.", util: false },
+        { items: ["Acido Fluorhidrico", "Hierro"], nombre: "Desecho Corrosivo", peligro: "BAJO", color: "#444", desc: "El hierro se desintegra en una masa negra.", extra: "No sirve para nada, es solo residuo químico.", util: false },
+        { items: ["Glicerina", "Permanganato de Potasio"], nombre: "Ignicion Espontanea", peligro: "ALTO", color: "var(--warning)", desc: "Fuego púrpura tras unos segundos de retraso.", extra: "Oxidación extrema de la glicerina.", util: false }
     ];
 
     let seleccionados = [];
-    let recetas = JSON.parse(localStorage.getItem('recetas_v9')) || [];
+    let inventarioPersonal = JSON.parse(localStorage.getItem('lab_inv_v10')) || [];
 
     function setup() {
+        renderInventory();
+    }
+
+    function renderInventory() {
         const inv = document.getElementById('inventory');
-        Object.keys(QUIMICOS).sort().forEach(n => {
-            const d = document.createElement('div');
-            d.className = 'item';
-            d.id = `item-${n.replace(/ /g, "_")}`;
-            d.innerHTML = `<span>${n}</span> <button class="q-btn" onclick="info(event, '${n}')">?</button>`;
-            d.onclick = () => toggle(n, d);
-            inv.appendChild(d);
-        });
-        updateSavedUI();
+        inv.innerHTML = "";
+        
+        // Elementos base
+        const base = Object.keys(QUIMICOS).sort();
+        base.forEach(n => createItem(n, false));
+
+        // Elementos creados (Pólvora, etc)
+        inventarioPersonal.forEach(n => createItem(n, true));
+    }
+
+    function createItem(n, isNew) {
+        const inv = document.getElementById('inventory');
+        const d = document.createElement('div');
+        d.className = `item ${isNew ? 'new-item' : ''}`;
+        d.id = `item-${n.replace(/ /g, "_")}`;
+        
+        // Info específica si es nuevo o base
+        const data = QUIMICOS[n] || { d: "Producto sintetizado en este laboratorio.", uso: "Reactivo complejo." };
+
+        d.innerHTML = `<span>${n}</span> <button class="q-btn" onclick="openInfo(event, '${n}')">?</button>`;
+        d.onclick = () => toggle(n, d);
+        inv.appendChild(d);
     }
 
     function toggle(n, el) {
@@ -133,7 +136,7 @@
             seleccionados.push(n);
             el.classList.add('active');
         }
-        document.getElementById('selection-text').innerText = seleccionados.length ? seleccionados.join(' + ') : "Mesa vacía...";
+        document.getElementById('selection-text').innerText = seleccionados.length ? "Reactivos: " + seleccionados.join(' + ') : "Reactivos listos: Ninguno";
         document.getElementById('mix-trigger').disabled = seleccionados.length < 2;
     }
 
@@ -143,66 +146,55 @@
         
         box.style.display = "block";
         if (match) {
+            box.style.borderLeftColor = match.color;
             box.innerHTML = `
+                <div class="danger-badge" style="background:${match.color}; color:white">PELIGRO: ${match.peligro}</div>
                 <h3 style="margin:0">${match.nombre}</h3>
                 <p>${match.desc}</p>
-                ${match.util ? `<button class="btn-save-recipe" onclick="saveRecipe('${match.nombre}')">💾 GUARDAR RECETA</button>` : `<p style="color:var(--danger)">⚠️ Resultado inútil, no se puede guardar.</p>`}
+                <button class="q-btn" style="position:absolute; top:15px; right:15px" onclick="openReactionInfo('${match.nombre}')">?</button>
+                ${match.util && !inventarioPersonal.includes(match.nombre) ? `<button onclick="craftItem('${match.nombre}')" style="width:100%; padding:10px; background:var(--safe); border:none; color:white; border-radius:5px; font-weight:bold; margin-top:10px;">AÑADIR A ESTANTE</button>` : ""}
             `;
         } else {
-            box.innerHTML = `<h3>Mezcla Desconocida</h3><p>Sin datos químicos registrados.</p>`;
+            box.innerHTML = `<h3>Resultado Desconocido</h3><p>La mezcla no produjo una reacción registrada.</p>`;
         }
     }
 
-    function saveRecipe(nombre) {
-        const r = REACCIONES.find(re => re.nombre === nombre);
-        if (!recetas.some(x => x.nombre === nombre)) {
-            recetas.push({ nombre: r.nombre, ingredientes: r.items, uso: r.uso });
-            localStorage.setItem('recetas_v9', JSON.stringify(recetas));
-            updateSavedUI();
+    function craftItem(nombre) {
+        if (!inventarioPersonal.includes(nombre)) {
+            inventarioPersonal.push(nombre);
+            localStorage.setItem('lab_inv_v10', JSON.stringify(inventarioPersonal));
+            renderInventory();
+            document.getElementById('result-display').style.display = "none";
+            clearLab();
         }
     }
 
-    function updateSavedUI() {
-        const list = document.getElementById('saved-list');
-        list.innerHTML = recetas.map(r => `
-            <div class="recipe-card">
-                <div><b>${r.nombre}</b></div>
-                <div>
-                    <button class="btn-action btn-load" onclick="loadRecipe('${r.nombre}')">CARGAR</button>
-                    <button class="q-btn" style="display:inline-flex" onclick="showRecipeInfo('${r.nombre}')">?</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function loadRecipe(nombre) {
-        clearLab();
-        const r = recetas.find(x => x.nombre === nombre);
-        r.ingredientes.forEach(ing => {
-            const el = document.getElementById(`item-${ing.replace(/ /g, "_")}`);
-            if (el) toggle(ing, el);
-        });
-    }
-
-    function showRecipeInfo(nombre) {
-        const r = recetas.find(x => x.nombre === nombre);
+    function openInfo(e, n) {
+        e.stopPropagation();
+        const d = QUIMICOS[n] || { d: "Producto sintetizado.", uso: "Reactivo complejo.", piel: "Desconocido", aire: "Desconocido", ingest: "Desconocido", prev: "Manejar con cuidado." };
         document.getElementById('modal-body').innerHTML = `
-            <h3>RECETA: ${r.nombre}</h3>
-            <p><b>Ingredientes necesarios:</b><br>${r.ingredientes.join(' + ')}</p>
-            <p><i>Uso: ${r.uso}</i></p>
-            <button class="close-btn" onclick="closeM()">ENTENDIDO</button>
+            <h2 style="color:var(--accent); margin-top:0">${n}</h2>
+            <p>${d.d}</p>
+            <div style="background:#161b22; padding:15px; border-radius:10px; text-align:left">
+                <p>⚠️ <b>Piel:</b> ${d.piel}</p>
+                <p>🌬️ <b>Aire:</b> ${d.aire}</p>
+                <p>👄 <b>Ingestión:</b> ${d.ingest}</p>
+                <p>🛡️ <b>Prevención:</b> ${d.prev}</p>
+            </div>
+            <p>🛠️ <b>Uso:</b> ${d.uso}</p>
+            <button class="close-btn" onclick="closeM()">CERRAR FICHA</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function info(e, n) {
-        e.stopPropagation();
-        const d = QUIMICOS[n];
+    function openReactionInfo(nombre) {
+        const r = REACCIONES.find(x => x.nombre === nombre);
         document.getElementById('modal-body').innerHTML = `
-            <h2>${n}</h2>
-            <p>${d.d}</p>
-            <p><b>Uso principal:</b> ${d.u}</p>
-            <button class="close-btn" onclick="closeM()">CERRAR</button>
+            <h3>EXPLICACIÓN CIENTÍFICA</h3>
+            <h2 style="color:var(--warning)">${r.nombre}</h2>
+            <p style="font-size:13px; line-height:1.5">${r.extra}</p>
+            <p><b>Reactivos usados:</b> ${r.items.join(' + ')}</p>
+            <button class="close-btn" onclick="closeM()">ENTENDIDO</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
@@ -214,13 +206,13 @@
         document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
         document.getElementById('result-display').style.display = "none";
         document.getElementById('mix-trigger').disabled = true;
-        document.getElementById('selection-text').innerText = "Mesa vacía...";
+        document.getElementById('selection-text').innerText = "Reactivos listos: Ninguno";
     }
 
     function filter() {
         const q = document.getElementById('search').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         document.querySelectorAll('.item').forEach(el => {
-            el.classList.toggle('hide', !el.textContent.toLowerCase().includes(q));
+            el.classList.toggle('hide', !el.innerText.toLowerCase().includes(q));
         });
     }
 
