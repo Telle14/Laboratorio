@@ -3,165 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChemMix Pro - Tabla Periódica & Reacciones</title>
+    <title>Lab Químico Maestro</title>
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --accent: #38bdf8;
-            --danger: #ef4444; --warning: #f59e0b; --safe: #10b981;
+            --bg: #0a0e14; --card: #161b22; --accent: #58a6ff;
+            --danger: #f85149; --warning: #d29922; --safe: #3fb950;
         }
-        body { font-family: 'Inter', system-ui; background: var(--bg); color: #f8fafc; margin: 0; padding: 15px; }
-        .app-container { max-width: 500px; margin: auto; }
-        h1 { font-size: 1.5rem; color: var(--accent); text-align: center; margin-bottom: 5px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #c9d1d9; margin: 0; padding: 10px; }
+        .app { max-width: 600px; margin: auto; }
         
-        /* Inventario de Selección */
-        .inventory { background: var(--card); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #334155; }
-        .tag-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-        .tag { background: #334155; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
-        .tag.selected { background: var(--accent); color: #000; font-weight: bold; }
+        /* Estante de Químicos */
+        .shelf { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 15px; }
+        .chemical-item { display: inline-flex; align-items: center; background: #21262d; padding: 5px 10px; border-radius: 8px; margin: 4px; border: 1px solid #30363d; cursor: pointer; }
+        .chemical-item.selected { border-color: var(--accent); background: #1f2937; }
+        .info-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; margin-left: 8px; cursor: help; display: flex; align-items: center; justify-content: center; }
 
-        /* Panel de Resultado */
-        .result-panel { background: var(--card); border-radius: 15px; padding: 20px; min-height: 200px; border-top: 5px solid #334155; }
-        .danger-badge { display: inline-block; padding: 4px 12px; border-radius: 6px; font-weight: 800; margin-bottom: 10px; }
+        /* Zona de Mezcla */
+        .lab-zone { text-align: center; padding: 20px; border: 2px dashed #30363d; border-radius: 15px; margin-bottom: 15px; }
+        .mix-btn { background: var(--safe); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        .mix-btn:disabled { background: #21262d; cursor: not-allowed; }
+
+        /* Resultado y Recetas */
+        .result-box { display: none; background: var(--card); padding: 20px; border-radius: 12px; border-left: 10px solid #ccc; animation: slideIn 0.3s; margin-bottom: 15px; }
+        .recipe-book { background: #0d1117; padding: 15px; border-radius: 12px; border: 1px solid var(--accent); }
         
-        .storage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; font-size: 0.8rem; }
-        .storage-item { background: #0f172a; padding: 8px; border-radius: 6px; border-left: 2px solid var(--accent); }
-        
-        .action-block { background: #450a0a; border: 1px solid var(--danger); padding: 10px; border-radius: 8px; margin-top: 10px; }
-        .use-case { color: var(--safe); font-style: italic; margin-top: 10px; display: block; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .danger-badge { padding: 5px 15px; border-radius: 5px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <h1>🧪 ChemMix Pro</h1>
-    <p style="text-align: center; font-size: 0.9rem; opacity: 0.8;">Selecciona múltiples elementos/compuestos:</p>
-
-    <div class="inventory">
-        <div class="tag-container" id="inventory-list">
-            </div>
-        <button onclick="clearSelection()" style="margin-top:15px; background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px 10px; border-radius:5px;">Limpiar Laboratorio</button>
+<div class="app">
+    <h2 style="text-align:center; color: var(--accent);">🧪 Lab Maestro Pro</h2>
+    
+    <div class="shelf">
+        <p style="margin-top:0; font-size:0.9rem;">Toca para seleccionar químicos (puedes elegir varios):</p>
+        <div id="chemical-list"></div>
     </div>
 
-    <div id="result" class="result-panel">
-        <div id="status-msg">Selecciona elementos para iniciar la reacción...</div>
+    <div class="lab-zone">
+        <div id="selection-display">Ningún químico seleccionado</div>
+        <button class="mix-btn" id="btn-mezclar" onclick="mezclar()" disabled>MEZCLAR AHORA</button>
+        <button onclick="limpiar()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem;">Limpiar Mesa</button>
+    </div>
+
+    <div id="resultado" class="result-box"></div>
+
+    <div class="recipe-book">
+        <h4 style="margin:0 0 10px 0;">📔 Recetas Descubiertas / Guardadas</h4>
+        <div id="saved-recipes" style="font-size: 0.85rem; opacity: 0.8;">Aún no has guardado nada.</div>
     </div>
 </div>
 
 <script>
-    // Base de datos de elementos y sus propiedades
-    const elements = {
-        "Azufre": { cat: "no-metal", storage: "Lugar seco, envase plástico.", air: "Estable, pero inflamable." },
-        "Salitre (Nitrato de K)": { cat: "oxidante", storage: "Recipiente de vidrio, lejos de orgánicos.", air: "Atrae humedad." },
-        "Carbón": { cat: "combustible", storage: "Bolsas cerradas.", air: "Estable." },
-        "Magnesio": { cat: "metal", storage: "Recipiente hermético, evitar humedad.", air: "Se oxida lentamente." },
-        "Ácido Sulfúrico": { cat: "ácido", storage: "Vidrio borosilicatado, cubeta de seguridad.", air: "Humos corrosivos." },
-        "Sodio Puro": { cat: "metal-reactivo", storage: "Sumergido en aceite mineral.", air: "¡Explota con humedad ambiental!" },
-        "Glicerina": { cat: "alcohol", storage: "Lugar fresco.", air: "Estable." },
-        "Cloro": { cat: "gas", storage: "Cilindros de alta presión.", air: "Gases letales asfixiantes." }
+    // BASE DE DATOS EXTENSA
+    const chemicals = {
+        "Lavandina": { skin: "Quema la piel.", breath: "Irritación pulmonar severa.", ingest: "Corrosivo interno. Grave.", storage: "Lugar fresco, envase plástico." },
+        "Amoníaco": { skin: "Cáustico.", breath: "Asfixiante fuerte.", ingest: "Vómitos y quemaduras.", storage: "Ventilación alta." },
+        "Vinagre": { skin: "Irritación leve.", breath: "Olor punzante.", ingest: "Seguro en poca dosis.", storage: "Cualquier envase." },
+        "Nafta": { skin: "Reseca y daña.", breath: "Mareos y alucinaciones.", ingest: "Tóxico fatal.", storage: "Metal o HDPE aprobado." },
+        "Aluminio (Papel)": { skin: "Inerte.", breath: "Polvo peligroso.", ingest: "Obstrucción.", storage: "Seco." },
+        "Sosa Cáustica": { skin: "Disuelve tejidos (Grave).", breath: "Polvo corrosivo.", ingest: "Letal.", storage: "Plástico grueso, seco." },
+        "Ácido Muriático": { skin: "Quemadura ácida instantánea.", breath: "Humos que disuelven dientes/pulmón.", ingest: "Destruye esófago.", storage: "Vidrio o plástico especial." },
+        "Azufre": { skin: "Dermatitis.", breath: "Tos seca.", ingest: "Tóxico.", storage: "Lejos de fuego." },
+        "Salitre": { skin: "Irritación.", breath: "Estornudos.", ingest: "Dolor estomacal.", storage: "Bolsa hermética." },
+        "Carbón": { skin: "Ensucia.", breath: "Daño a largo plazo.", ingest: "Indigestión.", storage: "Lugar seco." }
     };
 
-    // Diccionario de recetas complejas
-    const recipes = [
-        {
-            ingredients: ["Azufre", "Salitre (Nitrato de K)", "Carbón"],
-            result: "Pólvora Negra",
-            danger: "🔴 EXTREMO",
-            desc: "Deflagración rápida. Produce gran volumen de gases y calor.",
-            use: "Propulsión pirotécnica y minería antigua.",
-            noHacer: "No moler los ingredientes juntos (el calor de fricción puede encenderla)."
-        },
-        {
-            ingredients: ["Ácido Sulfúrico", "Glicerina"],
-            result: "Precursor de Nitroglicerina",
-            danger: "🔴🔴 LETAL",
-            desc: "Altamente inestable. Cualquier vibración puede causar una explosión masiva.",
-            use: "Explosivos industriales (Dinamita).",
-            noHacer: "No tocar sin equipo especializado. La temperatura debe controlarse con hielo."
-        },
-        {
-            ingredients: ["Magnesio", "Salitre (Nitrato de K)"],
-            result: "Mezcla Flash",
-            danger: "🟠 ALTO",
-            desc: "Luz blanca cegadora y calor intenso. Se quema instantáneamente.",
-            use: "Efectos especiales y señales de emergencia.",
-            noHacer: "No mirar directamente a la llama (daño retiniano permanente)."
-        }
+    const reactions = [
+        { items: ["Lavandina", "Amoníaco"], name: "Gas Cloramina", danger: "EXTREMO 🔴", desc: "Gas tóxico mortal. Ataca pulmones.", color: "#ff5252" },
+        { items: ["Lavandina", "Vinagre"], name: "Gas Cloro", danger: "ALTO 🟠", desc: "Gas verde que quema ojos y garganta.", color: "#ffa726" },
+        { items: ["Aluminio (Papel)", "Sosa Cáustica"], name: "Gas Hidrógeno", danger: "EXPLOSIVO 🧨", desc: "Libera calor extremo y gas que explota con chispas.", color: "#f44336" },
+        { items: ["Azufre", "Salitre", "Carbón"], name: "Pólvora Negra", danger: "INFLAMABLE 🔥", desc: "Deflagración rápida. Uso: Pirotecnia.", color: "#795548" },
+        { items: ["Ácido Muriático", "Aluminio (Papel)"], name: "Cloruro de Aluminio + H2", danger: "PELIGRO ☢️", desc: "Reacción violenta con mucho calor y gases.", color: "#607d8b" }
     ];
 
-    let selected = [];
+    let selectedItems = [];
+    let discovered = JSON.parse(localStorage.getItem('quimica_descubierta')) || [];
 
-    function init() {
-        const list = document.getElementById('inventory-list');
-        Object.keys(elements).forEach(el => {
-            const span = document.createElement('span');
-            span.className = 'tag';
-            span.innerText = el;
-            span.onclick = () => toggleElement(el, span);
-            list.appendChild(span);
+    function renderChemicals() {
+        const container = document.getElementById('chemical-list');
+        Object.keys(chemicals).forEach(name => {
+            const div = document.createElement('div');
+            div.className = 'chemical-item';
+            div.innerHTML = `${name} <button class="info-btn" onclick="showInfo(event, '${name}')">?</button>`;
+            div.onclick = () => selectItem(name, div);
+            container.appendChild(div);
         });
+        updateSavedDisplay();
     }
 
-    function toggleElement(name, el) {
-        if (selected.includes(name)) {
-            selected = selected.filter(i => i !== name);
-            el.classList.remove('selected');
+    function showInfo(event, name) {
+        event.stopPropagation();
+        const info = chemicals[name];
+        alert(`INFO SEGURIDAD - ${name}:\n\n👃 Respirar: ${info.breath}\n✋ Piel: ${info.skin}\n👄 Ingerir: ${info.ingest}\n📦 Almacenaje: ${info.storage}`);
+    }
+
+    function selectItem(name, element) {
+        if (selectedItems.includes(name)) {
+            selectedItems = selectedItems.filter(i => i !== name);
+            element.classList.remove('selected');
         } else {
-            selected.push(name);
-            el.classList.add('selected');
+            selectedItems.push(name);
+            element.classList.add('selected');
         }
-        updateResult();
+        document.getElementById('selection-display').innerText = selectedItems.length > 0 ? selectedItems.join(' + ') : "Ningún químico seleccionado";
+        document.getElementById('btn-mezclar').disabled = selectedItems.length < 2;
     }
 
-    function updateResult() {
-        const panel = document.getElementById('result');
-        if (selected.length === 0) {
-            panel.innerHTML = "Selecciona elementos para iniciar...";
-            panel.style.borderTopColor = "#334155";
-            return;
-        }
-
-        // Buscar si los elementos seleccionados forman una receta
-        const recipe = recipes.find(r => 
-            r.ingredients.every(i => selected.includes(i)) && 
-            selected.length === r.ingredients.length
+    function mezclar() {
+        const resBox = document.getElementById('resultado');
+        const match = reactions.find(r => 
+            r.items.length === selectedItems.length && 
+            r.items.every(i => selectedItems.includes(i))
         );
 
-        let html = `<h3>Mezcla: ${selected.join(' + ')}</h3>`;
-        
-        if (recipe) {
-            panel.style.borderTopColor = "var(--danger)";
-            html += `<div class="danger-badge" style="background:var(--danger)">${recipe.danger}</div>`;
-            html += `<p><strong>Producto:</strong> ${recipe.result}</p>`;
-            html += `<p>${recipe.desc}</p>`;
-            html += `<span class="use-case">Uso posible: ${recipe.use}</span>`;
-            html += `<div class="action-block"><strong>PROHIBIDO:</strong> ${recipe.noHacer}</div>`;
+        resBox.style.display = "block";
+        if (match) {
+            resBox.style.borderLeftColor = match.color;
+            resBox.innerHTML = `
+                <div class="danger-badge" style="background:${match.color}">DIFICULTAD: ${match.danger}</div>
+                <h3>Resultante: ${match.name}</h3>
+                <p>${match.desc}</p>
+                <button onclick="guardarMezcla('${match.name}', '${selectedItems.join('+')}')">💾 Guardar Receta</button>
+            `;
         } else {
-            panel.style.borderTopColor = "var(--warning)";
-            html += `<div class="danger-badge" style="background:var(--warning)">RIESGO DESCONOCIDO</div>`;
-            html += `<p>Mezcla no catalogada. Advertencia: Combinar químicos sin conocimiento puede generar gases tóxicos o calor imprevisto.</p>`;
+            resBox.style.borderLeftColor = "#555";
+            resBox.innerHTML = `
+                <div class="danger-badge" style="background:#555">RANGO: DESCONOCIDO ❓</div>
+                <h3>Mezcla Indeterminada</h3>
+                <p>No hay datos sobre esta mezcla exacta. ¡CUIDADO! Puede ser inestable o producir calor imprevisto.</p>
+            `;
         }
-
-        // Mostrar almacenamiento de cada elemento seleccionado
-        html += `<div class="storage-grid">`;
-        selected.forEach(el => {
-            html += `<div class="storage-item">
-                <strong>${el}:</strong><br>
-                📦 ${elements[el].storage}<br>
-                ☁️ ${elements[el].air}
-            </div>`;
-        });
-        html += `</div>`;
-
-        panel.innerHTML = html;
     }
 
-    function clearSelection() {
-        selected = [];
-        document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
-        updateResult();
+    function guardarMezcla(nombre, combo) {
+        if (!discovered.some(d => d.combo === combo)) {
+            discovered.push({ nombre, combo });
+            localStorage.setItem('quimica_descubierta', JSON.stringify(discovered));
+            updateSavedDisplay();
+            alert("Receta guardada en tu libro.");
+        }
     }
 
-    init();
+    function updateSavedDisplay() {
+        const container = document.getElementById('saved-recipes');
+        if (discovered.length === 0) return;
+        container.innerHTML = discovered.map(d => `<div>✅ <b>${d.nombre}</b>: <small>${d.combo}</small></div>`).join('');
+    }
+
+    function limpiar() {
+        selectedItems = [];
+        document.querySelectorAll('.chemical-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('selection-display').innerText = "Ningún químico seleccionado";
+        document.getElementById('resultado').style.display = "none";
+        document.getElementById('btn-mezclar').disabled = true;
+    }
+
+    renderChemicals();
 </script>
+
 </body>
 </html>
