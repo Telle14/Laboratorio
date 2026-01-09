@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lab Químico Ultra Pro V7</title>
+    <title>Lab Master V8 - Crafting Edition</title>
     <style>
         :root {
             --bg: #010409; --card: #0d1117; --border: #30363d;
@@ -11,51 +11,46 @@
             --safe: #3fb950; --info: #bc8cff; --text: #c9d1d9;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 12px; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 10px; font-size: 11px; overflow-x: hidden; }
         
-        .container { max-width: 650px; margin: auto; display: flex; flex-direction: column; gap: 10px; }
-        h1 { font-size: 18px; text-align: center; color: var(--accent); margin: 5px 0; }
+        .container { max-width: 600px; margin: auto; display: flex; flex-direction: column; gap: 8px; }
+        h1 { font-size: 16px; text-align: center; color: var(--accent); margin: 5px 0; text-transform: uppercase; letter-spacing: 2px; }
 
-        /* Buscador */
-        .search-box { position: sticky; top: 0; z-index: 10; background: var(--bg); padding-bottom: 5px; }
-        #search { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: white; }
+        .search-box { position: sticky; top: 0; z-index: 100; background: var(--bg); padding: 5px 0; }
+        #search { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: white; font-size: 13px; }
 
-        /* Lista */
-        .shelf { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; max-height: 300px; overflow-y: auto; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-        .item { background: #161b22; border: 1px solid var(--border); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .item.active { border-color: var(--accent); background: #1f2937; box-shadow: 0 0 8px rgba(88,166,255,0.3); }
+        .shelf { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 250px; overflow-y: auto; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .item { background: #161b22; border: 1px solid var(--border); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .item.active { border-color: var(--accent); background: #1f2937; }
         .item.hide { display: none; }
 
-        /* Botón ? */
-        .q-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--info); color: var(--info); background: none; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; cursor: help; }
+        .q-btn { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--info); color: var(--info); background: none; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 10px; cursor: help; }
 
-        /* Reactor */
-        .reactor { background: var(--card); border: 2px dashed var(--border); border-radius: 15px; padding: 20px; text-align: center; }
-        .mix-btn { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--safe); color: white; font-weight: bold; font-size: 15px; cursor: pointer; text-transform: uppercase; }
+        .reactor { background: var(--card); border: 2px dashed var(--border); border-radius: 12px; padding: 15px; text-align: center; }
+        .mix-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--safe); color: white; font-weight: bold; font-size: 13px; cursor: pointer; }
         .mix-btn:disabled { background: #21262d; color: #484f58; }
 
-        /* Resultado */
-        .result-pane { display: none; background: #161b22; border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-top: 10px; border-left: 5px solid var(--accent); position: relative; }
-        .danger-badge { display: inline-block; padding: 4px 10px; border-radius: 5px; font-weight: bold; font-size: 10px; margin-bottom: 8px; }
+        .result-pane { display: none; background: #161b22; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; border-left: 4px solid var(--accent); animation: slide 0.3s ease; }
+        @keyframes slide { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Modales */
+        .history { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; }
+        .recipe-card { background: #010409; border-radius: 6px; padding: 8px; margin-bottom: 5px; border-left: 3px solid var(--safe); }
+
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: var(--card); border: 1px solid var(--accent); border-radius: 15px; padding: 20px; width: 100%; max-height: 80%; overflow-y: auto; }
-        .close-btn { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; margin-top: 15px; font-weight: bold; }
+        .modal-content { background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; width: 100%; max-height: 80%; overflow-y: auto; }
+        .close-btn { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 6px; width: 100%; margin-top: 10px; font-weight: bold; }
 
-        /* Animación de Peligro */
-        .alert-bg { animation: alertFlash 0.5s infinite; }
-        @keyframes alertFlash { 50% { background: #4a0000; } }
+        .danger-tag { font-weight: bold; font-size: 9px; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🔬 LABORATORIO V7 MASTER</h1>
+    <h1>CHEM-LAB Master V8</h1>
 
     <div class="search-box">
-        <input type="text" id="search" placeholder="Buscar elemento (ej: agua, fuego, acido...)" onkeyup="filter()">
+        <input type="text" id="search" placeholder="Buscar reactivo..." onkeyup="filter()">
     </div>
 
     <div class="shelf">
@@ -63,14 +58,17 @@
     </div>
 
     <div class="reactor">
-        <div id="selection-text" style="margin-bottom: 10px; color: #8b949e;">Selecciona reactivos para experimentar...</div>
-        <button class="mix-btn" id="mix-trigger" disabled onclick="simulate()">MEZCLAR REACTIVOS</button>
-        <div style="margin-top: 10px;">
-            <button onclick="clearLab()" style="background:none; border:none; color:var(--danger); font-size:11px; cursor:pointer;">VACIAR MESA</button>
-        </div>
+        <div id="selection-text" style="margin-bottom: 8px; color: #8b949e; font-size: 10px;">Selecciona elementos para combinar...</div>
+        <button class="mix-btn" id="mix-trigger" disabled onclick="simulate()">MEZCLAR AHORA</button>
+        <button onclick="clearLab()" style="background:none; border:none; color:var(--danger); font-size:9px; margin-top:10px; cursor:pointer;">RESETEAR MESA</button>
     </div>
 
     <div id="result-display" class="result-pane"></div>
+
+    <div class="history">
+        <span style="font-weight:bold; color:var(--accent); font-size:10px;">📔 BITÁCORA DE DESCUBRIMIENTOS</span>
+        <div id="saved-list" style="margin-top:8px;"></div>
+    </div>
 </div>
 
 <div id="modal" class="modal">
@@ -78,150 +76,64 @@
 </div>
 
 <script>
-    // --- BASE DE DATOS DE 50+ ELEMENTOS ---
     const QUIMICOS = {
-        "Acido Fluorhidrico": { tipo: "Liquido incoloro", color: "Transparente", cont: "Plastico (PEAD)", skin: "Destruye el calcio de los huesos.", air: "Asfixia inmediata.", ingest: "Mortal.", uso: "Grabar vidrio.", prev: "Traje NBQ." },
-        "Hierro": { tipo: "Metal solido", color: "Gris oscuro", cont: "Seco", skin: "Seguro.", air: "Nulo.", ingest: "Grave.", uso: "Construccion.", prev: "N/A" },
-        "Agua": { tipo: "Liquido", color: "Transparente", cont: "Cualquiera", skin: "Seguro.", air: "Seguro.", ingest: "Vital.", uso: "Solvente universal.", prev: "N/A" },
-        "Fuego": { tipo: "Plasma/Energia", color: "Naranja", cont: "Quemador", skin: "Quemadura termica.", air: "Humo toxico.", ingest: "Mortal.", uso: "Calor.", prev: "Extintor cerca." },
-        "Sodio Metalico": { tipo: "Solido blando", color: "Plateado", cont: "Aceite", skin: "Quema al contacto.", air: "Irritante.", ingest: "Explosivo.", uso: "Lab.", prev: "Pinzas." },
-        "Acido Sulfurico": { tipo: "Liquido denso", color: "Aceitoso", cont: "Vidrio", skin: "Carboniza la piel.", air: "Daña pulmones.", ingest: "Mortal.", uso: "Baterias.", prev: "Gafas y guantes." },
-        "Nafta": { tipo: "Liquido volatil", color: "Amarillento", cont: "Metal", skin: "Irrita.", air: "Mareos.", ingest: "Fatal.", uso: "Combustible.", prev: "No chispas." },
-        "Lavandina": { tipo: "Liquido", color: "Verdoso", cont: "Plastico", skin: "Irrita.", air: "Tos.", ingest: "Grave.", uso: "Limpieza.", prev: "No mezclar." },
-        "Amoniaco": { tipo: "Gas/Liquido", color: "Incoloro", skin: "Quema.", air: "Asfixia.", ingest: "Mortal.", uso: "Fertilizante.", prev: "Mascara." },
-        "Sosa Caustica": { tipo: "Solido", color: "Blanco", skin: "Disuelve tejido.", air: "Irrita.", ingest: "Mortal.", uso: "Destapa cañerias.", prev: "Gafas." },
-        "Glicerina": { tipo: "Liquido viscoso", color: "Transparente", skin: "Seguro.", air: "Nulo.", ingest: "Seguro.", uso: "Jabones.", prev: "N/A" },
-        "Permanganato de Potasio": { tipo: "Cristal", color: "Purpura", skin: "Mancha.", air: "Irrita.", ingest: "Toxico.", uso: "Filtros.", prev: "Guantes." },
-        "Magnesio": { tipo: "Metal", color: "Plateado", skin: "Seguro.", air: "Humo cegador.", ingest: "N/A.", uso: "Bengalas.", prev: "No mirar llama." },
-        "Acetona": { tipo: "Liquido", color: "Incoloro", skin: "Reseca.", air: "Irrita ojos.", ingest: "Toxico.", uso: "Quitaesmalte.", prev: "Ventilacion." },
-        "Azufre": { tipo: "Polvo", color: "Amarillo", skin: "Leve.", air: "Asfixia.", ingest: "Toxico.", uso: "Polvora.", prev: "N/A" },
-        "Salitre": { tipo: "Polvo", color: "Blanco", skin: "Nulo.", air: "Nulo.", ingest: "Grave.", uso: "Explosivos.", prev: "Seco." },
-        "Carbon": { tipo: "Solido", color: "Negro", skin: "Ensucia.", air: "Daña pulmon.", ingest: "Antidoto.", uso: "Filtros.", prev: "N/A" },
-        "Acido Nitrico": { tipo: "Liquido", color: "Ambar", skin: "Quema.", air: "Gas rojo veneno.", ingest: "Mortal.", uso: "Abono.", prev: "Mascara." },
-        "Cloro Gaseoso": { tipo: "Gas", color: "Verde", skin: "Quema.", air: "Letal.", ingest: "N/A.", uso: "Piscina.", prev: "Mascara total." },
-        "Mercurio": { tipo: "Metal liquido", color: "Plata", cont: "Vidrio", skin: "Toxico.", air: "Neurotoxico.", ingest: "Mortal.", uso: "Sensores.", prev: "Hermetico." },
-        "Metanol": { tipo: "Liquido", color: "Incoloro", skin: "Absorcion.", air: "Ceguera.", ingest: "Muerte.", uso: "Solvente.", prev: "No inhalar." },
-        "Etanol": { tipo: "Liquido", color: "Incoloro", skin: "Frio.", air: "Borrachera.", ingest: "Embriaga.", uso: "Antiseptico.", prev: "Inflamable." },
-        "Hielo Seco": { tipo: "Solido", color: "Blanco", skin: "Congela.", air: "Asfixia.", ingest: "Explosion.", uso: "Efectos.", prev: "Guantes." },
-        "Cal Viva": { tipo: "Polvo", color: "Blanco", skin: "Quema.", air: "Irrita.", ingest: "Grave.", uso: "Obra.", prev: "Sin agua." },
-        "Cianuro de Potasio": { tipo: "Sal", color: "Blanco", skin: "Mortal.", air: "Mortal.", ingest: "Instantaneo.", uso: "Oro.", prev: "Protocolo S." },
-        "Litio": { tipo: "Metal", color: "Gris", skin: "Quema.", air: "Irrita.", ingest: "Grave.", uso: "Baterias.", prev: "Aceite." },
-        "Bicarbonato de Sodio": { tipo: "Polvo", color: "Blanco", skin: "Nulo.", air: "Nulo.", ingest: "Seguro.", uso: "Cocina.", prev: "N/A" },
-        "Vinagre": { tipo: "Liquido", color: "Transparente", skin: "Nulo.", air: "Nulo.", ingest: "Seguro.", uso: "Cocina.", prev: "N/A" },
-        "Agua Oxigenada": { tipo: "Liquido", color: "Incoloro", skin: "Blanquea.", air: "Irrita.", ingest: "Grave.", uso: "Heridas.", prev: "Luz solar." },
-        "Aluminio": { tipo: "Metal", color: "Gris", skin: "Seguro.", air: "Nulo.", ingest: "Nulo.", uso: "Papel.", prev: "N/A" }
+        "Acido Fluorhidrico": { desc: "Liquido ultra-corrosivo.", piel: "Daña huesos.", uso: "Grabado de cristales." },
+        "Hierro": { desc: "Metal de transicion.", piel: "Seguro.", uso: "Construccion pesada." },
+        "Agua": { desc: "Solvente universal.", piel: "Seguro.", uso: "Refrigerante y vida." },
+        "Fuego": { desc: "Energia termica.", piel: "Quema.", uso: "Iniciador de reacciones." },
+        "Sodio Metalico": { desc: "Metal altamente reactivo.", piel: "Corrosivo.", uso: "Sintesis organica." },
+        "Litio": { desc: "Metal ligero reactivo.", piel: "Irrita.", uso: "Baterias de alto rendimiento." },
+        "Salitre": { desc: "Oxidante potente (Nitrato).", piel: "Reseca.", uso: "Fertilizantes y polvora." },
+        "Azufre": { desc: "No metal inflamable.", piel: "Leve irritacion.", uso: "Vulcanizacion." },
+        "Carbon": { desc: "Elemento base organico.", piel: "Mancha.", uso: "Combustible y filtros." },
+        "Polvora": { desc: "Mezcla explosiva artesanal.", piel: "Seguro (sin fuego).", uso: "Mineria y pirotecnia." },
+        "Lavandina": { desc: "Desinfectante clorado.", piel: "Irrita.", uso: "Limpieza." },
+        "Amoniaco": { desc: "Gas de olor fuerte.", piel: "Quema.", uso: "Limpieza profunda." },
+        "Glicerina": { desc: "Liquido viscoso dulce.", piel: "Humecta.", uso: "Jabones y explosivos." },
+        "Permanganato de Potasio": { desc: "Oxidante purpura.", piel: "Mancha fuerte.", uso: "Tratamiento de agua." },
+        "Acido Sulfurico": { desc: "Acido mineral fuerte.", piel: "Carboniza.", uso: "Industria quimica." },
+        "Nafta": { desc: "Hidrocarburo inflamable.", piel: "Reseca.", uso: "Motores." },
+        "Sosa Caustica": { desc: "Base fuerte corrosiva.", piel: "Saponifica la grasa.", uso: "Destape de cañerias." },
+        "Aluminio": { desc: "Metal ligero.", piel: "Seguro.", uso: "Envases." }
     };
 
-    // --- MOTOR DE REACCIONES INTELIGENTE ---
     const REACCIONES = [
-        { 
-            items: ["Acido Fluorhidrico", "Hierro"], 
-            nombre: "Desintegracion Metalica", 
-            peligro: "ALTO", 
-            color: "#ffa726",
-            desc: "El acido carcome el hierro en pocos minutos, convirtiendolo en una masa liquida negra y soltando gas hidrogeno.",
-            info_q: "El fluor ataca la estructura molecular del hierro, deshaciendo los enlaces metalicos casi al contacto."
-        },
-        { 
-            items: ["Agua", "Sodio Metalico"], 
-            nombre: "Explosion Hidrolitica", 
-            peligro: "MORTAL", 
-            color: "#f44336",
-            desc: "Reaccion instantanea. El sodio corre sobre el agua, se enciende y explota lanzando fuego blanco.",
-            info_q: "El agua cede sus atomos de oxigeno violentamente, liberando hidrogeno que se quema por el calor de la friccion molecular."
-        },
-        { 
-            items: ["Nafta", "Fuego"], 
-            nombre: "Deflagracion de Combustible", 
-            peligro: "ALTO", 
-            color: "#ff5722",
-            desc: "Llamarada masiva instantanea. El liquido se vaporiza y expande el fuego rapidamente.",
-            info_q: "Los hidrocarburos se oxidan en una reaccion en cadena que libera energia termica pura."
-        },
-        { 
-            items: ["Lavandina", "Amoniaco"], 
-            nombre: "Nube de Cloramina", 
-            peligro: "MORTAL", 
-            color: "#f44336",
-            desc: "Se genera un humo blanco invisible que asfixia a cualquier ser vivo en segundos.",
-            info_q: "La mezcla de hipoclorito con amonio crea un gas que destruye las celulas de los pulmones al contacto."
-        },
-        { 
-            items: ["Acido Sulfurico", "Azufre", "Salitre"], 
-            nombre: "Combustion de Polvora Acida", 
-            peligro: "EXTREMO", 
-            color: "#d32f2f",
-            desc: "Explosion de humo rojo. El azufre se oxida violentamente creando una bola de fuego acida.",
-            info_q: "El salitre aporta oxigeno, el azufre el combustible y el acido actua como catalizador de alta velocidad."
-        },
-        { 
-            items: ["Glicerina", "Permanganato de Potasio"], 
-            nombre: "Ignicion Termica", 
-            peligro: "MEDIO", 
-            color: "#ff9800",
-            desc: "Tras 30 segundos, la mezcla empieza a humear y se enciende en una llama purpura intensa.",
-            info_q: "Es una reaccion de oxidacion retardada. El permanganato 'come' la glicerina hasta que el calor genera fuego."
-        },
-        { 
-            items: ["Sosa Caustica", "Agua"], 
-            nombre: "Disolucion Exotermica", 
-            peligro: "BAJO", 
-            color: "#8bc34a",
-            desc: "El agua sube de temperatura hasta casi hervir. Si toca la piel, la disuelve.",
-            info_q: "La rotura de los cristales de sosa libera energia termica directamente al agua."
-        },
-        { 
-            items: ["Vinagre", "Bicarbonato de Sodio"], 
-            nombre: "Liberacion de CO2", 
-            peligro: "NULO", 
-            color: "#4caf50",
-            desc: "Efervescencia inmediata. Crea espuma fria de dioxido de carbono.",
-            info_q: "Reaccion acido-base simple que genera acetato de sodio y gas inofensivo."
-        },
-        {
-            items: ["Acido Sulfurico", "Azucar"], // El azucar no esta arriba, pero se puede agregar
-            nombre: "Columna de Carbon", peligro: "ALTO", color: "#ff9800",
-            desc: "El azucar se vuelve negra y crece como una serpiente de carbon caliente en 1 minuto.",
-            info_q: "El acido deshidrata el azucar quitandole el agua y dejando solo el esqueleto de carbono."
-        }
+        { items: ["Salitre", "Azufre", "Carbon"], nombre: "Polvora Negra", peligro: "ALTO", util: true, desc: "Has creado polvora estable. Un propelente clasico.", uso: "Municion y voladuras controladas." },
+        { items: ["Polvora", "Fuego"], nombre: "Deflagracion Explosiva", peligro: "MORTAL", util: true, desc: "¡KABOOM! La polvora se expande violentamente con fuego.", uso: "Demolicion de rocas en mineria." },
+        { items: ["Litio", "Agua"], nombre: "Estallido de Hidrogeno", peligro: "EXTREMO", util: true, desc: "El litio flota, burbujea violentamente y explota con un destello.", uso: "Generacion rapida de energia." },
+        { items: ["Acido Fluorhidrico", "Hierro"], nombre: "Desecho Corrosivo", peligro: "ALTO", util: false, desc: "El hierro se vuelve una masa negra inservible.", uso: "Ninguno." },
+        { items: ["Agua", "Sodio Metalico"], nombre: "Explosion de Sodio", peligro: "MORTAL", util: true, desc: "Reaccion violenta que genera una bola de fuego blanca.", uso: "Demostraciones de reactividad." },
+        { items: ["Lavandina", "Amoniaco"], nombre: "Gas Toxico", peligro: "MORTAL", util: true, desc: "Se libera gas cloramina mortal.", uso: "Arma quimica (Prohibido)." },
+        { items: ["Glicerina", "Permanganato de Potasio"], nombre: "Fuego Purpura", peligro: "MEDIO", util: true, desc: "Ignicion retardada de alta temperatura.", uso: "Supervivencia y señales." },
+        { items: ["Vinagre", "Bicarbonato de Sodio"], nombre: "Dioxido de Carbono", peligro: "NULO", util: true, desc: "Efervescencia segura.", uso: "Extintores caseros." }
     ];
 
     let seleccionados = [];
-
-    // --- FUNCIONALIDAD ---
+    let bitacora = JSON.parse(localStorage.getItem('bitacora_v8')) || [];
 
     function setup() {
-        const list = document.getElementById('inventory');
-        Object.keys(QUIMICOS).sort().forEach(nombre => {
-            const div = document.createElement('div');
-            div.className = 'item';
-            div.id = `item-${nombre}`;
-            div.innerHTML = `<span>${nombre}</span> <button class="q-btn" onclick="openInfo(event, '${nombre}')">?</button>`;
-            div.onclick = () => toggle(nombre, div);
-            list.appendChild(div);
+        const inv = document.getElementById('inventory');
+        Object.keys(QUIMICOS).sort().forEach(n => {
+            const d = document.createElement('div');
+            d.className = 'item';
+            d.id = `item-${n}`;
+            d.innerHTML = `<span>${n}</span> <button class="q-btn" onclick="info(event, '${n}')">?</button>`;
+            d.onclick = () => toggle(n, d);
+            inv.appendChild(d);
         });
+        updateBitacora();
     }
 
-    function clean(txt) { return txt.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
-
-    function filter() {
-        const q = clean(document.getElementById('search').value);
-        document.querySelectorAll('.item').forEach(el => {
-            const name = clean(el.id);
-            el.classList.toggle('hide', !name.includes(q));
-        });
-    }
-
-    function toggle(name, el) {
-        if (seleccionados.includes(name)) {
-            seleccionados = seleccionados.filter(n => n !== name);
+    function toggle(n, el) {
+        if (seleccionados.includes(n)) {
+            seleccionados = seleccionados.filter(x => x !== n);
             el.classList.remove('active');
         } else {
-            if (seleccionados.length >= 4) return;
-            seleccionados.push(name);
+            if (seleccionados.length >= 3) return;
+            seleccionados.push(n);
             el.classList.add('active');
         }
-        document.getElementById('selection-text').innerText = seleccionados.length ? seleccionados.join(' + ') : "Selecciona reactivos...";
+        document.getElementById('selection-text').innerText = seleccionados.length ? seleccionados.join(' + ') : "Selecciona elementos...";
         document.getElementById('mix-trigger').disabled = seleccionados.length < 2;
     }
 
@@ -230,60 +142,65 @@
         const match = REACCIONES.find(r => r.items.length === seleccionados.length && r.items.every(i => seleccionados.includes(i)));
         
         box.style.display = "block";
-        box.className = "result-pane";
-
         if (match) {
-            if (match.peligro === "MORTAL" || match.peligro === "EXTREMO") box.classList.add('alert-bg');
-            box.style.borderLeftColor = match.color;
+            const pColor = match.peligro === "MORTAL" ? "var(--danger)" : (match.peligro === "ALTO" ? "var(--warning)" : "var(--safe)");
+            box.style.borderLeftColor = pColor;
             box.innerHTML = `
-                <div class="danger-badge" style="background:${match.color}; color:white">PELIGRO: ${match.peligro}</div>
+                <div class="danger-tag" style="background:${pColor}; color:white">PELIGRO: ${match.peligro}</div>
                 <h3 style="margin:0">${match.nombre}</h3>
                 <p>${match.desc}</p>
-                <button class="q-btn" style="position:absolute; top:15px; right:15px;" onclick="openReactionInfo('${match.nombre}')">?</button>
+                <small><b>Uso:</b> ${match.uso}</small>
+                ${match.util ? `<br><button onclick="save('${match.nombre}', '${match.uso}')" style="margin-top:10px; border:none; background:var(--accent); color:white; padding:4px 8px; border-radius:4px; font-size:9px;">💾 ARCHIVAR</button>` : `<p style="color:var(--danger); font-size:9px;">⚠️ No se archiva: Resultado inútil.</p>`}
             `;
         } else {
-            box.innerHTML = `<h3 style="color:#8b949e">Mezcla Incierta</h3><p>No hay datos especificos. La combinacion podria ser inerte o liberar gases desconocidos. ¡Proceder con cuidado!</p>`;
+            box.innerHTML = `<h3>Mezcla Desconocida</h3><p>No hay datos. Podria ser estable o una explosion silenciosa.</p>`;
         }
     }
 
-    function openInfo(e, n) {
+    function save(nom, uso) {
+        if (!bitacora.some(b => b.nom === nom)) {
+            bitacora.push({ nom, uso });
+            localStorage.setItem('bitacora_v8', JSON.stringify(bitacora));
+            updateBitacora();
+        }
+    }
+
+    function updateBitacora() {
+        const list = document.getElementById('saved-list');
+        list.innerHTML = bitacora.length ? bitacora.map(b => `
+            <div class="recipe-card">
+                <b>${b.nom}</b><br><small>Uso: ${b.uso}</small>
+            </div>
+        `).join('') : "<small style='opacity:0.5'>Sin descubrimientos utiles.</small>";
+    }
+
+    function info(e, n) {
         e.stopPropagation();
         const d = QUIMICOS[n];
         document.getElementById('modal-body').innerHTML = `
             <h2 style="color:var(--accent); margin:0">${n}</h2>
-            <p><b>Estado:</b> ${d.tipo} | <b>Color:</b> ${d.color}</p>
-            <hr border="0" height="1" background="#30363d">
-            <h4 style="color:var(--danger)">⚠️ RIESGOS BIOLOGICOS</h4>
-            <p>🖐️ <b>Piel:</b> ${d.skin}</p>
-            <p>🌬️ <b>Aire:</b> ${d.air}</p>
-            <p>👄 <b>Boca:</b> ${d.ingest}</p>
-            <p><b>🛡️ Prevencion:</b> ${d.prev}</p>
-            <button class="close-btn" onclick="closeModal()">CERRAR FICHA</button>
+            <p>${d.desc}</p>
+            <p>⚠️ <b>Piel:</b> ${d.piel}</p>
+            <p>🛠️ <b>Uso:</b> ${d.uso}</p>
+            <button class="close-btn" onclick="closeM()">CERRAR</button>
         `;
         document.getElementById('modal').style.display = 'flex';
     }
 
-    function openReactionInfo(nombre) {
-        const r = REACCIONES.find(re => re.nombre === nombre);
-        document.getElementById('modal-body').innerHTML = `
-            <h2 style="color:var(--warning); margin:0">INFO DE REACCION</h2>
-            <h3 style="margin:10px 0">${r.nombre}</h3>
-            <p style="background:#161b22; padding:15px; border-radius:10px; border-left:4px solid var(--info)">
-                ${r.info_q}
-            </p>
-            <button class="close-btn" onclick="closeModal()">ENTENDIDO</button>
-        `;
-        document.getElementById('modal').style.display = 'flex';
-    }
-
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    function closeM() { document.getElementById('modal').style.display = 'none'; }
 
     function clearLab() {
         seleccionados = [];
         document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
-        document.getElementById('result-display').style.display = 'none';
+        document.getElementById('result-display').style.display = "none";
         document.getElementById('mix-trigger').disabled = true;
-        document.getElementById('selection-text').innerText = "Selecciona reactivos...";
+    }
+
+    function filter() {
+        const q = document.getElementById('search').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        document.querySelectorAll('.item').forEach(el => {
+            el.classList.toggle('hide', !el.id.toLowerCase().includes(q));
+        });
     }
 
     setup();
