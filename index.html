@@ -3,100 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Químico Maestro</title>
+    <title>Enciclopedia Química Pro</title>
     <style>
         :root {
-            --bg: #0a0e14; --card: #161b22; --accent: #58a6ff;
-            --danger: #f85149; --warning: #d29922; --safe: #3fb950;
+            --bg: #0d1117; --card: #161b22; --accent: #58a6ff;
+            --danger: #f85149; --warning: #d29922; --safe: #3fb950; --info: #bc8cff;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #c9d1d9; margin: 0; padding: 10px; }
-        .app { max-width: 600px; margin: auto; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: #c9d1d9; margin: 0; padding: 10px; line-height: 1.4; }
+        .app { max-width: 700px; margin: auto; }
         
-        /* Estante de Químicos */
-        .shelf { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 15px; }
-        .chemical-item { display: inline-flex; align-items: center; background: #21262d; padding: 5px 10px; border-radius: 8px; margin: 4px; border: 1px solid #30363d; cursor: pointer; }
-        .chemical-item.selected { border-color: var(--accent); background: #1f2937; }
-        .info-btn { background: var(--accent); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 12px; margin-left: 8px; cursor: help; display: flex; align-items: center; justify-content: center; }
-
-        /* Zona de Mezcla */
-        .lab-zone { text-align: center; padding: 20px; border: 2px dashed #30363d; border-radius: 15px; margin-bottom: 15px; }
-        .mix-btn { background: var(--safe); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-        .mix-btn:disabled { background: #21262d; cursor: not-allowed; }
-
-        /* Resultado y Recetas */
-        .result-box { display: none; background: var(--card); padding: 20px; border-radius: 12px; border-left: 10px solid #ccc; animation: slideIn 0.3s; margin-bottom: 15px; }
-        .recipe-book { background: #0d1117; padding: 15px; border-radius: 12px; border: 1px solid var(--accent); }
+        .shelf { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #30363d; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .chemical-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .danger-badge { padding: 5px 15px; border-radius: 5px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .chemical-item { display: flex; align-items: center; justify-content: space-between; background: #21262d; padding: 10px; border-radius: 8px; border: 1px solid #30363d; cursor: pointer; transition: 0.2s; }
+        .chemical-item.selected { border-color: var(--accent); background: #1f2937; box-shadow: 0 0 10px var(--accent); }
+        
+        .info-btn { background: var(--info); color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: bold; cursor: help; }
+
+        .lab-zone { text-align: center; padding: 25px; border: 2px dashed var(--accent); border-radius: 15px; margin-bottom: 15px; background: rgba(88, 166, 255, 0.05); }
+        .mix-btn { background: var(--safe); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 10px; transition: 0.3s; width: 100%; }
+        .mix-btn:active { transform: scale(0.95); }
+
+        .result-box { display: none; background: var(--card); padding: 20px; border-radius: 12px; border-top: 8px solid #ccc; margin-bottom: 15px; animation: fadeIn 0.4s; }
+        
+        .storage-tag { background: #30363d; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; color: var(--accent); display: inline-block; margin-top: 5px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { background: var(--card); width: 90%; max-height: 80%; overflow-y: auto; padding: 20px; border-radius: 15px; border: 1px solid var(--accent); }
+        .close-modal { background: var(--danger); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="app">
-    <h2 style="text-align:center; color: var(--accent);">🧪 Lab Maestro Pro</h2>
+    <h1 style="text-align:center; color: var(--accent); margin-bottom: 5px;">🔬 Laboratorio Químico Industrial</h1>
+    <p style="text-align:center; font-size: 0.9rem; margin-bottom: 20px;">Versión 3.0 - Enciclopedia de Reactividad</p>
     
     <div class="shelf">
-        <p style="margin-top:0; font-size:0.9rem;">Toca para seleccionar químicos (puedes elegir varios):</p>
-        <div id="chemical-list"></div>
+        <div class="chemical-grid" id="chemical-list"></div>
     </div>
 
     <div class="lab-zone">
-        <div id="selection-display">Ningún químico seleccionado</div>
-        <button class="mix-btn" id="btn-mezclar" onclick="mezclar()" disabled>MEZCLAR AHORA</button>
-        <button onclick="limpiar()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:0.8rem;">Limpiar Mesa</button>
+        <div id="selection-display" style="font-weight: bold; min-height: 1.5em;">Selecciona los componentes...</div>
+        <button class="mix-btn" id="btn-mezclar" onclick="mezclar()" disabled>GENERAR REACCIÓN</button>
+        <div style="margin-top:10px; font-size: 0.8rem; color: #8b949e;">⚠️ Advertencia: Simulador con fines educativos. Nunca realizar estas mezclas.</div>
     </div>
 
     <div id="resultado" class="result-box"></div>
+</div>
 
-    <div class="recipe-book">
-        <h4 style="margin:0 0 10px 0;">📔 Recetas Descubiertas / Guardadas</h4>
-        <div id="saved-recipes" style="font-size: 0.85rem; opacity: 0.8;">Aún no has guardado nada.</div>
-    </div>
+<div id="infoModal" class="modal">
+    <div class="modal-content" id="modalBody"></div>
 </div>
 
 <script>
-    // BASE DE DATOS EXTENSA
+    // BASE DE DATOS MASIVA DE QUÍMICOS
     const chemicals = {
-        "Lavandina": { skin: "Quema la piel.", breath: "Irritación pulmonar severa.", ingest: "Corrosivo interno. Grave.", storage: "Lugar fresco, envase plástico." },
-        "Amoníaco": { skin: "Cáustico.", breath: "Asfixiante fuerte.", ingest: "Vómitos y quemaduras.", storage: "Ventilación alta." },
-        "Vinagre": { skin: "Irritación leve.", breath: "Olor punzante.", ingest: "Seguro en poca dosis.", storage: "Cualquier envase." },
-        "Nafta": { skin: "Reseca y daña.", breath: "Mareos y alucinaciones.", ingest: "Tóxico fatal.", storage: "Metal o HDPE aprobado." },
-        "Aluminio (Papel)": { skin: "Inerte.", breath: "Polvo peligroso.", ingest: "Obstrucción.", storage: "Seco." },
-        "Sosa Cáustica": { skin: "Disuelve tejidos (Grave).", breath: "Polvo corrosivo.", ingest: "Letal.", storage: "Plástico grueso, seco." },
-        "Ácido Muriático": { skin: "Quemadura ácida instantánea.", breath: "Humos que disuelven dientes/pulmón.", ingest: "Destruye esófago.", storage: "Vidrio o plástico especial." },
-        "Azufre": { skin: "Dermatitis.", breath: "Tos seca.", ingest: "Tóxico.", storage: "Lejos de fuego." },
-        "Salitre": { skin: "Irritación.", breath: "Estornudos.", ingest: "Dolor estomacal.", storage: "Bolsa hermética." },
-        "Carbón": { skin: "Ensucia.", breath: "Daño a largo plazo.", ingest: "Indigestión.", storage: "Lugar seco." }
+        "Ácido Sulfúrico": {
+            desc: "Ácido mineral altamente corrosivo y deshidratante.",
+            color: "Líquido aceitoso incoloro a amarillento.",
+            container: "Vidrio borosilicatado o Polietileno de alta densidad (PEAD). Nunca metal.",
+            uses: "Fertilizantes, refinación de petróleo, limpieza de metales.",
+            skin: "Destruye tejidos instantáneamente. Produce calor extremo al contacto.",
+            breath: "Vapores asfixiantes que causan edema pulmonar.",
+            ingest: "Perforación inmediata del tracto digestivo. Letal.",
+            prevention: "Guantes de nitrilo grueso, máscara con filtro para gases ácidos, pechera de caucho."
+        },
+        "Sodio Metálico": {
+            desc: "Metal alcalino extremadamente reactivo.",
+            color: "Sólido blando, plateado (se oxida a blanco rápido).",
+            container: "Sumergido en aceite mineral o queroseno dentro de vidrio o metal.",
+            uses: "Síntesis química, lámparas de vapor de sodio.",
+            skin: "Reacciona con la humedad de la piel creando quemaduras térmicas y químicas.",
+            breath: "Polvo altamente irritante.",
+            ingest: "Reacción explosiva en el estómago por el agua.",
+            prevention: "Manejo en atmósfera inerte, pinzas secas, gafas de seguridad."
+        },
+        "Permanganato de K": {
+            desc: "Oxidante fuerte en forma de cristales.",
+            color: "Cristales sólidos de color púrpura oscuro intenso.",
+            container: "Frasco de vidrio oscuro (sensible a la luz).",
+            uses: "Tratamiento de aguas, desinfectante, síntesis orgánica.",
+            skin: "Tiñe la piel de marrón, irritación moderada.",
+            breath: "Polvo irrita vías respiratorias.",
+            ingest: "Tóxico, causa dolor abdominal fuerte.",
+            prevention: "Evitar contacto con materiales combustibles (se incendian)."
+        },
+        "Glicerina": {
+            desc: "Alcohol líquido viscoso y dulce.",
+            color: "Líquido espeso, transparente y viscoso.",
+            container: "Plástico o vidrio.",
+            uses: "Jabones, jarabes, lubricantes.",
+            skin: "Seguro, usado en cosmética.",
+            breath: "Inofensivo a temp. ambiente.",
+            ingest: "Seguro en pequeñas dosis.",
+            prevention: "Mantener alejado de oxidantes fuertes como el ácido nítrico."
+        },
+        "Clorato de Potasio": {
+            desc: "Compuesto oxidante altamente reactivo.",
+            color: "Polvo blanco cristalino.",
+            container: "Envase de plástico hermético.",
+            uses: "Cerillas (fósforos), pirotecnia, desinfectantes.",
+            skin: "Irritación leve.",
+            breath: "Polvo peligroso al inhalar.",
+            ingest: "Tóxico para la sangre (metahemoglobinemia).",
+            prevention: "No golpear ni friccionar cerca de azufre o fósforo."
+        },
+        "Ácido Nítrico": {
+            desc: "Ácido fuerte y agente oxidante muy potente.",
+            color: "Líquido transparente a amarillento, desprende humos.",
+            container: "Vidrio oscuro, lejos de la luz y el calor.",
+            uses: "Fabricación de explosivos, fertilizantes, grabado de metales.",
+            skin: "Quemaduras amarillentas severas, destruye la piel.",
+            breath: "Vapores rojos de óxido de nitrógeno muy venenosos.",
+            ingest: "Corrosivo letal.",
+            prevention: "Campana de extracción obligatoria, guantes ácidos."
+        },
+        "Peróxido (30%+)": {
+            desc: "Agua oxigenada concentrada (grado industrial).",
+            color: "Líquido transparente, un poco más denso que el agua.",
+            container: "Botellas con venteo para evitar explosión por presión.",
+            uses: "Blanqueador de papel, combustible de cohetes.",
+            skin: "Blanquea la piel al instante y causa quemaduras.",
+            breath: "Vapores irritantes.",
+            ingest: "Causa burbujas de oxígeno en la sangre (letal).",
+            prevention: "Mantener en lugar frío, lejos de metales."
+        },
+        "Acetona": {
+            desc: "Solvente orgánico altamente inflamable.",
+            color: "Líquido transparente, muy fluido y volátil.",
+            container: "Vidrio o metal (disuelve muchos plásticos).",
+            uses: "Quitaesmalte, limpieza de laboratorios.",
+            skin: "Reseca excesivamente la piel.",
+            breath: "Vapores causan dolor de cabeza y mareos.",
+            ingest: "Tóxico, afecta el sistema nervioso.",
+            prevention: "No usar cerca de llamas o chispas."
+        }
     };
 
+    // TABLA DE REACCIONES ESPECÍFICAS
     const reactions = [
-        { items: ["Lavandina", "Amoníaco"], name: "Gas Cloramina", danger: "EXTREMO 🔴", desc: "Gas tóxico mortal. Ataca pulmones.", color: "#ff5252" },
-        { items: ["Lavandina", "Vinagre"], name: "Gas Cloro", danger: "ALTO 🟠", desc: "Gas verde que quema ojos y garganta.", color: "#ffa726" },
-        { items: ["Aluminio (Papel)", "Sosa Cáustica"], name: "Gas Hidrógeno", danger: "EXPLOSIVO 🧨", desc: "Libera calor extremo y gas que explota con chispas.", color: "#f44336" },
-        { items: ["Azufre", "Salitre", "Carbón"], name: "Pólvora Negra", danger: "INFLAMABLE 🔥", desc: "Deflagración rápida. Uso: Pirotecnia.", color: "#795548" },
-        { items: ["Ácido Muriático", "Aluminio (Papel)"], name: "Cloruro de Aluminio + H2", danger: "PELIGRO ☢️", desc: "Reacción violenta con mucho calor y gases.", color: "#607d8b" }
+        { 
+            items: ["Ácido Sulfúrico", "Azufre", "Salitre"], 
+            name: "Gases de Ácido Nítrico", 
+            danger: "MÁXIMO 🔴", 
+            desc: "Reacción que genera vapores rojos altamente venenosos y ácidos. Riesgo de explosión si hay calor.",
+            safety: "Traje NBQ completo, ventilación forzada extrema."
+        },
+        { 
+            items: ["Sodio Metálico", "Peróxido (30%+)"], 
+            name: "Incendio Térmico Violento", 
+            danger: "CRÍTICO 🧨", 
+            desc: "El sodio reacciona con el oxígeno del peróxido de forma explosiva, lanzando metal fundido.",
+            safety: "Escudos de policarbonato, extinguidores de polvo seco (Clase D)."
+        },
+        { 
+            items: ["Glicerina", "Permanganato de K"], 
+            name: "Fuego por Oxidación", 
+            danger: "INCENDIO 🔥", 
+            desc: "Tras unos segundos, la mezcla se enciende sola con una llama púrpura muy caliente.",
+            safety: "Realizar solo sobre superficies refractarias, lejos de combustibles."
+        },
+        { 
+            items: ["Ácido Nítrico", "Glicerina"], 
+            name: "Precursor de Nitroglicerina", 
+            danger: "LETAL ☣️", 
+            desc: "Mezcla extremadamente inestable. Un ligero golpe puede causar una detonación masiva.",
+            safety: "Prohibido fuera de laboratorios militares. Control de temp. bajo cero."
+        },
+        { 
+            items: ["Acetona", "Peróxido (30%+)"], 
+            name: "Peróxido de Acetona (TATP)", 
+            danger: "EXPLOSIVO VOLÁTIL ⚠️", 
+            desc: "Crea cristales blancos que explotan con solo tocarlos. Muy usado en terrorismo por su inestabilidad.",
+            safety: "Nunca intentar. La mínima fricción detona la mezcla."
+        },
+        { 
+            items: ["Ácido Sulfúrico", "Peróxido (30%+)"], 
+            name: "Solución Piraña", 
+            danger: "EXTREMO 🔴", 
+            desc: "Disuelve cualquier materia orgánica al contacto. Se calienta hasta hervir sola.",
+            safety: "Protección total, manejo bajo campana de gases."
+        }
     ];
 
     let selectedItems = [];
-    let discovered = JSON.parse(localStorage.getItem('quimica_descubierta')) || [];
 
     function renderChemicals() {
         const container = document.getElementById('chemical-list');
         Object.keys(chemicals).forEach(name => {
+            const item = chemicals[name];
             const div = document.createElement('div');
             div.className = 'chemical-item';
-            div.innerHTML = `${name} <button class="info-btn" onclick="showInfo(event, '${name}')">?</button>`;
+            div.innerHTML = `
+                <span style="font-weight:bold">${name}</span>
+                <button class="info-btn" onclick="showInfo(event, '${name}')">FICHA</button>
+            `;
             div.onclick = () => selectItem(name, div);
             container.appendChild(div);
         });
-        updateSavedDisplay();
     }
 
     function showInfo(event, name) {
         event.stopPropagation();
         const info = chemicals[name];
-        alert(`INFO SEGURIDAD - ${name}:\n\n👃 Respirar: ${info.breath}\n✋ Piel: ${info.skin}\n👄 Ingerir: ${info.ingest}\n📦 Almacenaje: ${info.storage}`);
+        const modal = document.getElementById('infoModal');
+        const body = document.getElementById('modalBody');
+        
+        body.innerHTML = `
+            <h2 style="color:var(--accent); margin-top:0">${name}</h2>
+            <p><i>${info.desc}</i></p>
+            <hr style="border:0; border-top:1px solid #30363d">
+            <p><b>🔹 Estado:</b> ${info.color}</p>
+            <p><b>📦 Almacenaje:</b> ${info.container}</p>
+            <p><b>🛠️ Usos:</b> ${info.uses}</p>
+            <div style="background:#2d1a1a; padding:10px; border-radius:8px; margin:10px 0;">
+                <h4 style="color:var(--danger); margin:0 0 5px 0;">🚨 RIESGOS</h4>
+                <p><b>Piel:</b> ${info.skin}</p>
+                <p><b>Aire:</b> ${info.breath}</p>
+                <p><b>Boca:</b> ${info.ingest}</p>
+            </div>
+            <p><b>🛡️ Prevención:</b> ${info.prevention}</p>
+            <button class="close-modal" onclick="closeModal()">CERRAR FICHA</button>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('infoModal').style.display = 'none';
     }
 
     function selectItem(name, element) {
@@ -107,7 +243,7 @@
             selectedItems.push(name);
             element.classList.add('selected');
         }
-        document.getElementById('selection-display').innerText = selectedItems.length > 0 ? selectedItems.join(' + ') : "Ningún químico seleccionado";
+        document.getElementById('selection-display').innerText = selectedItems.length > 0 ? selectedItems.join(' + ') : "Selecciona los componentes...";
         document.getElementById('btn-mezclar').disabled = selectedItems.length < 2;
     }
 
@@ -120,44 +256,27 @@
 
         resBox.style.display = "block";
         if (match) {
-            resBox.style.borderLeftColor = match.color;
+            resBox.style.borderTopColor = "#f85149";
             resBox.innerHTML = `
-                <div class="danger-badge" style="background:${match.color}">DIFICULTAD: ${match.danger}</div>
-                <h3>Resultante: ${match.name}</h3>
-                <p>${match.desc}</p>
-                <button onclick="guardarMezcla('${match.name}', '${selectedItems.join('+')}')">💾 Guardar Receta</button>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <h2 style="margin:0; color:var(--danger)">${match.name}</h2>
+                    <span style="background:var(--danger); color:white; padding:5px 10px; border-radius:5px; font-weight:bold">${match.danger}</span>
+                </div>
+                <p style="font-size:1.1rem; margin:15px 0;">${match.desc}</p>
+                <div style="background:#21262d; padding:15px; border-radius:8px; border-left:4px solid var(--warning)">
+                    <h4 style="margin:0; color:var(--warning)">🧤 PROTOCOLO DE MEZCLADO</h4>
+                    <p style="margin:5px 0; font-size:0.9rem;">${match.safety}</p>
+                </div>
             `;
         } else {
-            resBox.style.borderLeftColor = "#555";
+            resBox.style.borderTopColor = "#555";
             resBox.innerHTML = `
-                <div class="danger-badge" style="background:#555">RANGO: DESCONOCIDO ❓</div>
-                <h3>Mezcla Indeterminada</h3>
-                <p>No hay datos sobre esta mezcla exacta. ¡CUIDADO! Puede ser inestable o producir calor imprevisto.</p>
+                <h2 style="color:#8b949e">Mezcla Sin Datos</h2>
+                <p>No hay una reacción catalogada para esta combinación exacta. Esto puede ser porque es inerte o porque es tan inestable que no hay registros seguros.</p>
+                <p><b>⚠️ REGLA DE ORO:</b> Si no sabes qué hace, NO lo mezcles.</p>
             `;
         }
-    }
-
-    function guardarMezcla(nombre, combo) {
-        if (!discovered.some(d => d.combo === combo)) {
-            discovered.push({ nombre, combo });
-            localStorage.setItem('quimica_descubierta', JSON.stringify(discovered));
-            updateSavedDisplay();
-            alert("Receta guardada en tu libro.");
-        }
-    }
-
-    function updateSavedDisplay() {
-        const container = document.getElementById('saved-recipes');
-        if (discovered.length === 0) return;
-        container.innerHTML = discovered.map(d => `<div>✅ <b>${d.nombre}</b>: <small>${d.combo}</small></div>`).join('');
-    }
-
-    function limpiar() {
-        selectedItems = [];
-        document.querySelectorAll('.chemical-item').forEach(el => el.classList.remove('selected'));
-        document.getElementById('selection-display').innerText = "Ningún químico seleccionado";
-        document.getElementById('resultado').style.display = "none";
-        document.getElementById('btn-mezclar').disabled = true;
+        window.scrollTo(0, document.body.scrollHeight);
     }
 
     renderChemicals();
